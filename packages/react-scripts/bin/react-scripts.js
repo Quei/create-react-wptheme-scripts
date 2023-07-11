@@ -11,7 +11,7 @@
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
-process.on('unhandledRejection', err => {
+process.on('unhandledRejection', (err) => {
   throw err;
 });
 
@@ -19,7 +19,7 @@ const spawn = require('react-dev-utils/crossSpawn');
 const args = process.argv.slice(2);
 
 const scriptIndex = args.findIndex(
-  x => x === 'build' || x === 'eject' || x === 'start' || x === 'test'
+  (x) => x === 'build' || x === 'eject' || x === 'start' || x === 'test'
 );
 let script = scriptIndex === -1 ? args[0] : args[scriptIndex]; // wptheme -- change to "let" to allow modification...
 const nodeArgs = scriptIndex > 0 ? args.slice(0, scriptIndex) : [];
@@ -28,7 +28,7 @@ script = script.replace(/cra/, ''); // wptheme -- added
 
 if (['build', 'eject', 'start', 'test'].includes(script)) {
   const result = spawn.sync(
-    'node',
+    process.execPath,
     nodeArgs
       .concat(require.resolve('../scripts/' + script))
       .concat(args.slice(scriptIndex + 1)),
