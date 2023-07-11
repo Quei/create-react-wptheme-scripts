@@ -1,10 +1,10 @@
 {
-  "name": "@quei/react-scripts-wptheme",
+  "name": "@Quei/react-scripts-wptheme",
   "version": "3.4.1-wp.1",
   "description": "Configuration and scripts for Create React WP Theme.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/quei/create-react-wptheme-scripts.git",
+    "url": "https://github.com/Quei/create-react-wptheme-scripts.git",
     "directory": "packages/react-scripts"
   },
   "author": "devloco",
