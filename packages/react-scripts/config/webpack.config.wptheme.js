@@ -660,19 +660,19 @@ module.exports = function (webpackEnv) {
       // isEnvDevelopment && new webpack.HotModuleReplacementPlugin(), // wptheme remarked out
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/master/packages/react-refresh
-      // isEnvDevelopment &&
-      //   shouldUseReactRefresh &&
-      //   new ReactRefreshWebpackPlugin({
-      //     overlay: {
-      //       entry: webpackDevClientEntry,
-      //       // The expected exports are slightly different from what the overlay exports,
-      //       // so an interop is included here to enable feedback on module-level errors.
-      //       module: reactRefreshOverlayEntry,
-      //       // Since we ship a custom dev client and overlay integration,
-      //       // the bundled socket handling logic can be eliminated.
-      //       sockIntegration: false,
-      //     },
-      //   }),
+      isEnvDevelopment &&
+        shouldUseReactRefresh &&
+        new ReactRefreshWebpackPlugin({
+          overlay: {
+            entry: webpackDevClientEntry,
+            // The expected exports are slightly different from what the overlay exports,
+            // so an interop is included here to enable feedback on module-level errors.
+            module: reactRefreshOverlayEntry,
+            // Since we ship a custom dev client and overlay integration,
+            // the bundled socket handling logic can be eliminated.
+            sockIntegration: false,
+          },
+        }),
       // Watcher doesn't work well if you mistype casing in a path so we use
       // a plugin that prints an error when you attempt to do this.
       // See https://github.com/facebook/create-react-app/issues/240
