@@ -33,7 +33,7 @@ const getClientEnvironment = require('./env-wptheme'); // wptheme modified
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+// const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 // @remove-on-eject-begin
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
@@ -61,12 +61,12 @@ const fileWatcherPluginConfig =
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 
-const webpackDevClientEntry = require.resolve(
-  'react-dev-utils/webpackHotDevClient'
-);
-const reactRefreshOverlayEntry = require.resolve(
-  'react-dev-utils/refreshOverlayInterop'
-);
+// const webpackDevClientEntry = require.resolve(
+//   'react-dev-utils/webpackHotDevClient'
+// );
+// const reactRefreshOverlayEntry = require.resolve(
+//   'react-dev-utils/refreshOverlayInterop'
+// );
 
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
 // makes for a smoother build process.
@@ -361,7 +361,7 @@ module.exports = function (webpackEnv) {
         // Make sure your source files are compiled, as they will not be processed in any way.
         new ModuleScopePlugin(paths.appSrc, [
           paths.appPackageJson,
-          reactRefreshOverlayEntry,
+          // reactRefreshOverlayEntry,
         ]),
       ],
     },
@@ -452,9 +452,9 @@ module.exports = function (webpackEnv) {
                       },
                     },
                   ],
-                  isEnvDevelopment &&
-                    shouldUseReactRefresh &&
-                    require.resolve('react-refresh/babel'),
+                  // isEnvDevelopment &&
+                  //   shouldUseReactRefresh &&
+                  //   require.resolve('react-refresh/babel'),
                 ].filter(Boolean),
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
@@ -660,19 +660,19 @@ module.exports = function (webpackEnv) {
       // isEnvDevelopment && new webpack.HotModuleReplacementPlugin(), // wptheme remarked out
       // Experimental hot reloading for React .
       // https://github.com/facebook/react/tree/master/packages/react-refresh
-      isEnvDevelopment &&
-        shouldUseReactRefresh &&
-        new ReactRefreshWebpackPlugin({
-          overlay: {
-            entry: webpackDevClientEntry,
-            // The expected exports are slightly different from what the overlay exports,
-            // so an interop is included here to enable feedback on module-level errors.
-            module: reactRefreshOverlayEntry,
-            // Since we ship a custom dev client and overlay integration,
-            // the bundled socket handling logic can be eliminated.
-            sockIntegration: false,
-          },
-        }),
+      // isEnvDevelopment &&
+      //   shouldUseReactRefresh &&
+      //   new ReactRefreshWebpackPlugin({
+      //     overlay: {
+      //       entry: webpackDevClientEntry,
+      //       // The expected exports are slightly different from what the overlay exports,
+      //       // so an interop is included here to enable feedback on module-level errors.
+      //       module: reactRefreshOverlayEntry,
+      //       // Since we ship a custom dev client and overlay integration,
+      //       // the bundled socket handling logic can be eliminated.
+      //       sockIntegration: false,
+      //     },
+      //   }),
       // Watcher doesn't work well if you mistype casing in a path so we use
       // a plugin that prints an error when you attempt to do this.
       // See https://github.com/facebook/create-react-app/issues/240
