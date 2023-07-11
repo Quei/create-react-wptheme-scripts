@@ -80,10 +80,11 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
 // wptheme - added section - start
 const config = configFactory('development');
 const appPackage = require(paths.appPackageJson);
-const wpThemeUserConfig = require('@devloco/create-react-wptheme-utils/getUserConfig')(
-  paths,
-  process.env.NODE_ENV
-);
+const wpThemeUserConfig =
+  require('@devloco/create-react-wptheme-utils/getUserConfig')(
+    paths,
+    process.env.NODE_ENV
+  );
 const wpThemePostInstallerInfo = require('@devloco/create-react-wptheme-utils/postInstallerInfo');
 const wpThemeFileFunctions = require('@devloco/create-react-wptheme-utils/fileFunctions');
 
