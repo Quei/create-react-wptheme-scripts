@@ -21,15 +21,6 @@ process.on('unhandledRejection', (err) => {
 
 // Ensure environment variables are read.
 require('../config/env');
-// @remove-on-eject-begin
-// Do the preflight check (only happens before eject).
-const verifyPackageTree = require('./utils/verifyPackageTree');
-if (process.env.SKIP_PREFLIGHT_CHECK !== 'true') {
-  verifyPackageTree();
-}
-const verifyTypeScriptSetup = require('./utils/verifyTypeScriptSetup');
-verifyTypeScriptSetup();
-// @remove-on-eject-end
 
 const fs = require('fs-extra'); // wptheme - touched
 const chalk = require('react-dev-utils/chalk');
@@ -44,10 +35,14 @@ const {
   prepareUrls,
 } = require('react-dev-utils/WebpackDevServerUtils');
 const openBrowser = require('react-dev-utils/openBrowser');
+const semver = require('semver');
 const paths = require('../config/paths-wptheme'); // wptheme - touched
 const configFactory = require('../config/webpack.config.wptheme'); // wptheme - touched
 //const createDevServerConfig = require('../config/webpackDevServer.config'); // wptheme - remarked out
+const getClientEnvironment = require('../config/env');
+const react = require(require.resolve('react', { paths: [paths.appPath] }));
 
+const env = getClientEnvironment(paths.publicUrlOrPath.slice(0, -1));
 const useYarn = fs.existsSync(paths.yarnLockFile);
 const isInteractive = process.stdout.isTTY;
 
