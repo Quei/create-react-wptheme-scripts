@@ -1,6 +1,6 @@
 {
   "name": "@quei/react-scripts-wptheme",
-  "version": "5.0.0",
+  "version": "5.0.0-2",
   "description": "Configuration and scripts for Create React WP Theme.",
   "repository": {
     "type": "git",
