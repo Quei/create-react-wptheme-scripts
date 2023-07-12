@@ -10,7 +10,7 @@
 // Makes the script crash on unhandled rejections instead of silently
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
-process.on('unhandledRejection', (err) => {
+process.on('unhandledRejection', err => {
   throw err;
 });
 
@@ -22,9 +22,6 @@ const spawn = require('react-dev-utils/crossSpawn');
 const { defaultBrowsers } = require('react-dev-utils/browsersHelper');
 const os = require('os');
 const verifyTypeScriptSetup = require('./utils/verifyTypeScriptSetup');
-const initWpTheme = require('./init-wptheme');
-
-let _readmeExists = false;
 
 function isInGitRepository() {
   try {
@@ -91,7 +88,7 @@ module.exports = function (
   originalDirectory,
   templateName
 ) {
-  let appPackage = require(path.join(appPath, 'package.json'));
+  const appPackage = require(path.join(appPath, 'package.json'));
   const useYarn = fs.existsSync(path.join(appPath, 'yarn.lock'));
 
   if (!templateName) {
@@ -106,21 +103,21 @@ module.exports = function (
         'create-react-app'
       )} are no longer supported.`
     );
+    console.error(
+      `You can fix this by running ${chalk.cyan(
+        'npm uninstall -g create-react-app'
+      )} or ${chalk.cyan(
+        'yarn global remove create-react-app'
+      )} before using ${chalk.cyan('create-react-app')} again.`
+    );
     return;
   }
 
-  const templatePath = path.join(
-    require.resolve(templateName, { paths: [appPath] }),
-    '..'
+  const templatePath = path.dirname(
+    require.resolve(`${templateName}/package.json`, { paths: [appPath] })
   );
 
-  let templateJsonPath;
-  if (templateName) {
-    templateJsonPath = path.join(templatePath, 'template.json');
-  } else {
-    // TODO: Remove support for this in v4.
-    templateJsonPath = path.join(appPath, '.template.dependencies.json');
-  }
+  const templateJsonPath = path.join(templatePath, 'template.json');
 
   let templateJson = {};
   if (fs.existsSync(templateJsonPath)) {
@@ -128,6 +125,18 @@ module.exports = function (
   }
 
   const templatePackage = templateJson.package || {};
+
+  // This was deprecated in CRA v5.
+  if (templateJson.dependencies || templateJson.scripts) {
+    console.log();
+    console.log(
+      chalk.red(
+        'Root-level `dependencies` and `scripts` keys in `template.json` were deprecated for Create React App 5.\n' +
+          'This template needs to be updated to use the new `package` key.'
+      )
+    );
+    console.log('For more information, visit https://cra.link/templates');
+  }
 
   // Keys to ignore in templatePackage
   const templatePackageBlacklist = [
@@ -140,13 +149,11 @@ module.exports = function (
     'author',
     'contributors',
     'files',
-    'main',
     'browser',
     'bin',
     'man',
     'directories',
     'repository',
-    'devDependencies',
     'peerDependencies',
     'bundledDependencies',
     'optionalDependencies',
@@ -163,21 +170,18 @@ module.exports = function (
 
   // Keys from templatePackage that will be added to appPackage,
   // replacing any existing entries.
-  const templatePackageToReplace = Object.keys(templatePackage).filter(
-    (key) => {
-      return (
-        !templatePackageBlacklist.includes(key) &&
-        !templatePackageToMerge.includes(key)
-      );
-    }
-  );
+  const templatePackageToReplace = Object.keys(templatePackage).filter(key => {
+    return (
+      !templatePackageBlacklist.includes(key) &&
+      !templatePackageToMerge.includes(key)
+    );
+  });
 
   // Copy over some of the devDependencies
   appPackage.dependencies = appPackage.dependencies || {};
 
   // Setup the script rules
-  // TODO: deprecate 'scripts' key directly on templateJson
-  const templateScripts = templatePackage.scripts || templateJson.scripts || {};
+  const templateScripts = templatePackage.scripts || {};
   appPackage.scripts = Object.assign(
     {
       start: 'react-scripts start',
@@ -208,30 +212,17 @@ module.exports = function (
   appPackage.browserslist = defaultBrowsers;
 
   // Add templatePackage keys/values to appPackage, replacing existing entries
-  templatePackageToReplace.forEach((key) => {
+  templatePackageToReplace.forEach(key => {
     appPackage[key] = templatePackage[key];
   });
-
-  _readmeExists = fs.existsSync(path.join(appPath, 'README.md'));
-
-  appPackage = initWpTheme.fnUpdateAppPackage(
-    appPackage,
-    appPath,
-    appName,
-    verbose,
-    originalDirectory,
-    templateName,
-    _readmeExists,
-    useYarn
-  );
 
   fs.writeFileSync(
     path.join(appPath, 'package.json'),
     JSON.stringify(appPackage, null, 2) + os.EOL
   );
 
-  // const readmeExists = fs.existsSync(path.join(appPath, 'README.md'));
-  if (_readmeExists) {
+  const readmeExists = fs.existsSync(path.join(appPath, 'README.md'));
+  if (readmeExists) {
     fs.renameSync(
       path.join(appPath, 'README.md'),
       path.join(appPath, 'README.old.md')
@@ -299,17 +290,23 @@ module.exports = function (
   } else {
     command = 'npm';
     remove = 'uninstall';
-    args = ['install', '--save', verbose && '--verbose'].filter((e) => e);
+    args = [
+      'install',
+      '--no-audit', // https://github.com/facebook/create-react-app/issues/11174
+      '--save',
+      verbose && '--verbose',
+    ].filter(e => e);
   }
 
-  // Install additional template dependencies, if present
-  // TODO: deprecate 'dependencies' key directly on templateJson
-  const templateDependencies =
-    templatePackage.dependencies || templateJson.dependencies;
-  if (templateDependencies) {
+  // Install additional template dependencies, if present.
+  const dependenciesToInstall = Object.entries({
+    ...templatePackage.dependencies,
+    ...templatePackage.devDependencies,
+  });
+  if (dependenciesToInstall.length) {
     args = args.concat(
-      Object.keys(templateDependencies).map((key) => {
-        return `${key}@${templateDependencies[key]}`;
+      dependenciesToInstall.map(([dependency, version]) => {
+        return `${dependency}@${version}`;
       })
     );
   }
@@ -332,7 +329,7 @@ module.exports = function (
     }
   }
 
-  if (args.find((arg) => arg.includes('typescript'))) {
+  if (args.find(arg => arg.includes('typescript'))) {
     console.log();
     verifyTypeScriptSetup();
   }
@@ -354,19 +351,6 @@ module.exports = function (
     console.log();
     console.log('Created git commit.');
   }
-
-  // wptheme intercept -- stop the standard create-react-app init here... wptheme will take over and display the final message.
-  initWpTheme.fnFinish(
-    appPackage,
-    appPath,
-    appName,
-    verbose,
-    originalDirectory,
-    templateName,
-    _readmeExists,
-    useYarn
-  );
-  return;
 
   // Display the most elegant way to cd.
   // This needs to handle an undefined originalDirectory for
@@ -410,7 +394,7 @@ module.exports = function (
   console.log();
   console.log(chalk.cyan('  cd'), cdpath);
   console.log(`  ${chalk.cyan(`${displayedCommand} start`)}`);
-  if (_readmeExists) {
+  if (readmeExists) {
     console.log();
     console.log(
       chalk.yellow(

@@ -1,1 +1,1 @@
-This file has moved [here](https://github.com/devloco/create-react-wptheme/blob/master/packages/cra-template-wptheme/README.md)
+This file has moved [here](https://github.com/facebook/create-react-app/blob/main/packages/cra-template/template/README.md)
