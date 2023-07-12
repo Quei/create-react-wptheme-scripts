@@ -690,15 +690,16 @@ module.exports = function (webpackEnv) {
       // touchFile is used to force WebPack to do a rebuild. It must be a file that WebPack is watching.
       isEnvDevelopment && new FileWatcherPlugin(fileWatcherPluginConfig),
 
-      isEnvProduction &&
-        new MiniCssExtractPlugin({
-          // Options similar to the same options in webpackOptions.output
-          // both options are optional
-          // wptheme - remove [contenthash] in favor of using HtmlWebpackPlugin's cache
-          // busting instead (see below).
-          filename: 'static/css/[name].css',
-          chunkFilename: 'static/css/[name].chunk.css',
-        }),
+      // :wptheme comment out
+      // isEnvProduction &&
+      new MiniCssExtractPlugin({
+        // Options similar to the same options in webpackOptions.output
+        // both options are optional
+        // wptheme - remove [contenthash] in favor of using HtmlWebpackPlugin's cache
+        // busting instead (see below).
+        filename: 'static/css/[name].css',
+        chunkFilename: 'static/css/[name].chunk.css',
+      }),
       // Generate an asset manifest file with the following content:
       // - "files" key: Mapping of all asset filenames to their corresponding
       //   output file so that tools can pick it up without having to parse
